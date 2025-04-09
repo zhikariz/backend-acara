@@ -3,6 +3,7 @@ import UserModel from "../models/user.model"
 import { encrypt } from "../utils/encryption"
 import { generateToken, type IUserToken } from "../utils/jwt"
 import type { IReqUser } from "../middlewares/auth.middleware"
+import type { Response } from "express"
 
 type TRegister = {
   fullName: string
