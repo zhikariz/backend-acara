@@ -59,6 +59,12 @@ const authController = {
     res.json({ fullName, username, email, password, confirmPassword })
   },
   login: async (req: Request, res: Response) => {
+    /**
+      #swagger.requestBody = {
+        required: true, 
+        schema: { $ref: "#/components/schemas/LoginRequest" }
+      }
+    */
     const { identifier, password } = req.body as unknown as TLogin
     try {
       const userByIdentifier = await UserModel.findOne({
@@ -100,7 +106,13 @@ const authController = {
       })
     }
   },
+
   me: async (req: IReqUser, res: Response) => {
+    /**
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+    */
     try {
       const user = req.user
 
