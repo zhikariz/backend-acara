@@ -5,7 +5,7 @@ export interface IReqUser extends Request {
   user?: IUserToken
 }
 
-export default (req: any, res: any, next: any) => {
+export default (req: Request, res: Response, next: NextFunction) => {
   const authorization = req.headers?.authorization
 
   if (!authorization) {

@@ -58,7 +58,7 @@ const authController = {
 
     res.json({ fullName, username, email, password, confirmPassword })
   },
-  login: async (req: any, res: any) => {
+  login: async (req: Request, res: Response) => {
     const { identifier, password } = req.body as unknown as TLogin
     try {
       const userByIdentifier = await UserModel.findOne({
@@ -100,7 +100,7 @@ const authController = {
       })
     }
   },
-  me: async (req: IReqUser, res: any) => {
+  me: async (req: IReqUser, res: Response) => {
     try {
       const user = req.user
 
