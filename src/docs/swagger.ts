@@ -27,6 +27,16 @@ const doc = {
       LoginRequest: {
         identifier: "admin@gmail.com",
         password: "12345678"
+      },
+      RegisterRequest: {
+        fullName: "admin",
+        username: "admin",
+        email: "zhikariz@yopmail.com",
+        password: "12345678",
+        confirmPassword: "12345678"
+      },
+      ActivationRequest: {
+        code: "abcdef"
       }
     }
   },

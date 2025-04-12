@@ -22,12 +22,36 @@ const registerValidateSchema = Yup.object({
   fullName: Yup.string().required(),
   username: Yup.string().required(),
   email: Yup.string().required(),
-  password: Yup.string().required(),
+  password: Yup.string().required()
+    .min(6, "Password must be at least 6 characters")
+    .test(
+      "at-least-one-uppercase-letter",
+      "Contains at least one uppercase letter",
+      (value) => {
+        if (!value) return false;
+        const regex = /^(?=.*[A-Z])/
+        return regex.test(value)
+      })
+    .test(
+      "at-least-one-number",
+      "Contains at least one number",
+      (value) => {
+        if (!value) return false;
+        const regex = /^(?=.*\d)/
+        return regex.test(value)
+      }),
   confirmPassword: Yup.string().required().oneOf([Yup.ref("password"), ""], "Password doesn't match"),
 })
 
-const authController = {
+export default {
   register: async (req: Request, res: Response) => {
+    /** 
+     #swagger.tags = ['Auth']
+     #swagger.requestBody = {
+       required: true, 
+       schema: { $ref: "#/components/schemas/RegisterRequest" }
+     }
+    */
     const { fullName, username, email, password, confirmPassword } = req.body as unknown as TRegister
 
     try {
@@ -60,6 +84,7 @@ const authController = {
   },
   login: async (req: Request, res: Response) => {
     /**
+      #swagger.tags = ['Auth']
       #swagger.requestBody = {
         required: true, 
         schema: { $ref: "#/components/schemas/LoginRequest" }
@@ -71,11 +96,12 @@ const authController = {
         $or: [
           { username: identifier },
           { email: identifier }
-        ]
+        ],
+        isActive: true
       })
       if (!userByIdentifier) {
         return res.status(403).json({
-          message: "User not found",
+          message: "user not found or maybe not active",
           data: null
         })
       }
@@ -109,6 +135,7 @@ const authController = {
 
   me: async (req: IReqUser, res: Response) => {
     /**
+      #swagger.tags = ['Auth']
       #swagger.security = [{
         "bearerAuth": []
       }]
@@ -129,7 +156,32 @@ const authController = {
         data: null
       })
     }
+  },
+  activation: async (req: Request, res: Response) => {
+    /**
+      #swagger.tags = ['Auth']
+      #swagger.requestBody = {
+      required: true,
+      schema: { $ref: "#/components/schemas/ActivationRequest" }
+      }
+    */
+    try {
+      const { code } = req.body as { code: string }
+
+      const user = await UserModel.findOneAndUpdate({ activationCode: code }, { isActive: true, }, { new: true })
+
+      res.status(200).json({
+        message: "user successfully activated",
+        data: user
+      })
+
+    } catch (error) {
+      const err = error as unknown as Error
+      return res.status(400).json({
+        message: err.message,
+        data: null
+      })
+    }
+
   }
 }
-
-export default authController
