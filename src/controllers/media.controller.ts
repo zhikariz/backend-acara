@@ -5,6 +5,9 @@ import response from "../utils/response";
 
 export default {
   single: async (req: IReqUser, res: Response) => {
+    /** 
+     #swagger.tags = ['Media']
+    */
     if (!req.file) {
       return response.error(res, new Error(), "file is not exists")
     }
@@ -16,6 +19,9 @@ export default {
     }
   },
   multiple: async (req: IReqUser, res: Response) => {
+    /** 
+     #swagger.tags = ['Media']
+    */
     if (!req.files || req.files.length === 0) {
       return response.error(res, new Error(), "files are not exists")
     }
@@ -27,6 +33,9 @@ export default {
     }
   },
   remove: async (req: IReqUser, res: Response) => {
+    /** 
+     #swagger.tags = ['Media']
+    */
     try {
       const { fileUrl } = req.body as { fileUrl: string }
       const result = await uploader.remove(fileUrl)
