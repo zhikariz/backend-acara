@@ -1,9 +1,10 @@
 import * as Yup from "yup"
 import UserModel from "../models/user.model"
 import { encrypt } from "../utils/encryption"
-import { generateToken, type IUserToken } from "../utils/jwt"
-import type { IReqUser } from "../middlewares/auth.middleware"
+import { generateToken } from "../utils/jwt"
 import type { Request, Response } from "express"
+import { IReqUser, IUserToken } from "../utils/interfaces"
+import response from "../utils/response"
 
 type TRegister = {
   fullName: string
@@ -69,18 +70,13 @@ export default {
         email,
         password
       })
-      res.status(200).json({
-        message: "Success Registration User", data: result
-      })
+      response.success(res, result, "success registration user")
     } catch (error) {
       const err = error as unknown as Error
-      return res.status(400).json({
-        message: err.message,
-        data: null
-      })
+      return response.error(res, err, "failed registration user")
     }
 
-    res.json({ fullName, username, email, password, confirmPassword })
+    response.success(res, { fullName, username, email, password, confirmPassword }, "success registration user")
   },
   login: async (req: Request, res: Response) => {
     /**
@@ -100,19 +96,13 @@ export default {
         isActive: true
       })
       if (!userByIdentifier) {
-        return res.status(403).json({
-          message: "user not found or maybe not active",
-          data: null
-        })
+        return response.forbidden(res, "user not found or maybe not active")
       }
 
       const validatePassword: boolean = encrypt(password) === userByIdentifier.password
 
       if (!validatePassword) {
-        return res.status(403).json({
-          message: "username or password is wrong",
-          data: null
-        })
+        return response.forbidden(res, "username or password is wrong")
       }
 
       const token = generateToken({
@@ -120,16 +110,10 @@ export default {
         role: userByIdentifier.role
       } as IUserToken)
 
-      res.status(200).json({
-        message: "Success Login User",
-        data: token
-      })
+      response.success(res, token, "success login user")
     } catch (error) {
       const err = error as unknown as Error
-      return res.status(400).json({
-        message: err.message,
-        data: null
-      })
+      return response.error(res, err, "failed login user")
     }
   },
 
@@ -145,16 +129,10 @@ export default {
 
       const result = await UserModel.findById(user?.id)
 
-      res.status(200).json({
-        message: "Success Get User",
-        data: result
-      })
+      response.success(res, result, "success get user")
     } catch (error) {
       const err = error as unknown as Error
-      return res.status(400).json({
-        message: err.message,
-        data: null
-      })
+      return response.error(res, err, "failed get user")
     }
   },
   activation: async (req: Request, res: Response) => {
@@ -170,18 +148,10 @@ export default {
 
       const user = await UserModel.findOneAndUpdate({ activationCode: code }, { isActive: true, }, { new: true })
 
-      res.status(200).json({
-        message: "user successfully activated",
-        data: user
-      })
-
+      response.success(res, user, "user successfully activated")
     } catch (error) {
       const err = error as unknown as Error
-      return res.status(400).json({
-        message: err.message,
-        data: null
-      })
+      return response.error(res, err, "failed activation user")
     }
-
   }
 }
