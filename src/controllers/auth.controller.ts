@@ -46,13 +46,7 @@ const registerValidateSchema = Yup.object({
 
 export default {
   register: async (req: Request, res: Response) => {
-    /** 
-     #swagger.tags = ['Auth']
-     #swagger.requestBody = {
-       required: true, 
-       schema: { $ref: "#/components/schemas/RegisterRequest" }
-     }
-    */
+
     const { fullName, username, email, password, confirmPassword } = req.body as unknown as TRegister
 
     try {
@@ -79,13 +73,6 @@ export default {
     response.success(res, { fullName, username, email, password, confirmPassword }, "success registration user")
   },
   login: async (req: Request, res: Response) => {
-    /**
-      #swagger.tags = ['Auth']
-      #swagger.requestBody = {
-        required: true, 
-        schema: { $ref: "#/components/schemas/LoginRequest" }
-      }
-    */
     const { identifier, password } = req.body as unknown as TLogin
     try {
       const userByIdentifier = await UserModel.findOne({
@@ -116,14 +103,7 @@ export default {
       return response.error(res, err, "failed login user")
     }
   },
-
   me: async (req: IReqUser, res: Response) => {
-    /**
-      #swagger.tags = ['Auth']
-      #swagger.security = [{
-        "bearerAuth": []
-      }]
-    */
     try {
       const user = req.user
 
@@ -136,13 +116,6 @@ export default {
     }
   },
   activation: async (req: Request, res: Response) => {
-    /**
-      #swagger.tags = ['Auth']
-      #swagger.requestBody = {
-      required: true,
-      schema: { $ref: "#/components/schemas/ActivationRequest" }
-      }
-    */
     try {
       const { code } = req.body as { code: string }
 

@@ -5,9 +5,6 @@ import CategoryModel, { categoryDAO } from "../models/category.model";
 
 export default {
   create: async (req: IReqUser, res: Response) => {
-    /** 
-     #swagger.tags = ['Category']
-    */
     try {
       await categoryDAO.validate(req.body, { abortEarly: false })
 
@@ -18,9 +15,6 @@ export default {
     }
   },
   findAll: async (req: IReqUser, res: Response) => {
-    /** 
-     #swagger.tags = ['Category']
-    */
     const { page = 1, limit = 10, search } = req.query as unknown as IPaginationQuery
 
     try {
@@ -57,9 +51,6 @@ export default {
     }
   },
   findOne: async (req: IReqUser, res: Response) => {
-    /** 
-     #swagger.tags = ['Category']
-    */
     try {
       const { id } = req.params
 
@@ -71,9 +62,6 @@ export default {
     }
   },
   update: async (req: IReqUser, res: Response) => {
-    /** 
-     #swagger.tags = ['Category']
-    */
     try {
       const { id } = req.params
 
@@ -87,13 +75,10 @@ export default {
 
   },
   remove: async (req: IReqUser, res: Response) => {
-    /** 
-     #swagger.tags = ['Category']
-    */
     try {
       const { id } = req.params
 
-      const result = await CategoryModel.findByIdAndDelete(id)
+      const result = await CategoryModel.findByIdAndDelete(id, { new: true })
 
       response.success(res, result, "success remove category")
     } catch (error) {
