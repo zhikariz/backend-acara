@@ -90,6 +90,12 @@ const EventSchema = new Schema<Event>({
   timestamps: true
 })
 
+EventSchema.index({
+  name: 'text',
+  description: 'text',
+  slug: 'text'
+})
+
 EventSchema.pre("save", function () {
   if (!this.slug) {
     const slug = this.name.split(" ").join("-").toLowerCase()
