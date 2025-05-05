@@ -64,7 +64,14 @@ const doc = {
       },
       RemoveMediaRequest: {
         fileUrl: ""
-      }
+      },
+      CreateTicketRequest: {
+        name: "",
+        price: 0,
+        quantity: 0,
+        description: "",
+        event: "event ObjectID",
+      },
     }
   },
 }

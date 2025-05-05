@@ -8,6 +8,7 @@ import mediaController from '../controllers/media.controller'
 import categoryController from '../controllers/category.controller'
 import regionController from '../controllers/region.controller'
 import eventController from '../controllers/event.controller'
+import ticketController from '../controllers/ticket.controller'
 
 const router = express.Router()
 
@@ -54,6 +55,63 @@ router.post(
   */
   '/auth/activation',
   authController.activation
+)
+
+router.post(
+  /*
+   * #swagger.tags = ['Ticket']
+   * #swagger.security = [{ "bearerAuth": {} }]
+   * #swagger.requestBody = {
+     required: true,
+     schema: { $ref: "#/components/schemas/CreateTicketRequest" }
+   }
+   */
+  "/tickets",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  ticketController.create,
+)
+router.get(
+  /*
+   * #swagger.tags = ['Ticket']
+   */
+  "/tickets",
+  ticketController.findAll,
+)
+router.get(
+  /*
+   * #swagger.tags = ['Ticket']
+   */
+  "/tickets/:id",
+  ticketController.findOne,
+)
+router.put(
+  /*
+   * #swagger.tags = ['Ticket']
+   * #swagger.security = [{ "bearerAuth": {} }]
+   * #swagger.requestBody = {
+     required: true,
+     schema: { $ref: "#/components/schemas/CreateTicketRequest" }
+   }
+   */
+  "/tickets/:id",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  ticketController.update,
+)
+router.delete(
+  /*
+   * #swagger.tags = ['Ticket']
+   * #swagger.security = [{ "bearerAuth": {} }]
+   */
+  "/tickets/:id",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  ticketController.remove,
+)
+router.get(
+  /*
+   * #swagger.tags = ['Ticket']
+   */
+  "/tickets/:eventId/events",
+  ticketController.findAllByEvent,
 )
 
 router.post(
