@@ -55,10 +55,12 @@ const doc = {
           coordinates: [
             0.0,
             0.0
-          ]
+          ],
+          address: "address",
         },
         isOnline: false,
-        isFeatured: false
+        isFeatured: false,
+        isPublish: false,
       },
       RemoveMediaRequest: {
         fileUrl: ""

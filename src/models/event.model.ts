@@ -17,7 +17,11 @@ export const eventDAO = Yup.object({
   createdBy: Yup.string().required("event created by is required"),
   createdAt: Yup.string(),
   updatedAt: Yup.string(),
-  location: Yup.object().required("event location is required"),
+  location: Yup.object().shape({
+    region: Yup.number(),
+    coordinates: Yup.array(),
+    address: Yup.string(),
+  }).required("event location is required"),
 })
 
 export type TEvent = Yup.InferType<typeof eventDAO>
@@ -74,6 +78,9 @@ const EventSchema = new Schema<Event>({
         type: [Schema.Types.Number],
         default: [0, 0]
       },
+      address: {
+        type: Schema.Types.String,
+      }
     },
     required: true,
   },
