@@ -26,6 +26,8 @@ const BannerSchema = new Schema<Banner>({
     type: Schema.Types.Boolean,
     required: true,
   },
+}, {
+  timestamps: true
 })
 
 BannerSchema.index({
