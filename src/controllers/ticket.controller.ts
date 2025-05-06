@@ -53,10 +53,10 @@ export default {
   findOne: async (req: IReqUser, res: Response) => {
     try {
       const { id } = req.params
+      if (!isValidObjectId(id)) return response.notFound(res, "failed to find a ticket")
       const result = await TicketModel.findById(id)
       if (!result) return response.notFound(res, "failed to find a ticket")
       response.success(res, result, "success to find a ticket")
-
     } catch (error) {
       response.error(res, error, "failed to find a ticket")
     }
@@ -64,9 +64,9 @@ export default {
   update: async (req: IReqUser, res: Response) => {
     try {
       const { id } = req.params
+      if (!isValidObjectId(id)) return response.notFound(res, "failed to find a ticket")
       const result = await TicketModel.findByIdAndUpdate(id, req.body, { new: true })
       response.success(res, result, "success to update a ticket")
-
     } catch (error) {
       response.error(res, error, "failed to update a ticket")
     }
@@ -74,6 +74,7 @@ export default {
   remove: async (req: IReqUser, res: Response) => {
     try {
       const { id } = req.params
+      if (!isValidObjectId(id)) return response.notFound(res, "failed to find a ticket")
       const result = await TicketModel.findByIdAndDelete(id, { new: true })
       response.success(res, result, "success to remove a ticket")
     } catch (error) {
@@ -83,9 +84,7 @@ export default {
   findAllByEvent: async (req: IReqUser, res: Response) => {
     try {
       const { eventId } = req.params
-      if (!isValidObjectId(eventId)) {
-        return response.error(res, "invalid event id", "failed to find ticket by event")
-      }
+      if (!isValidObjectId(eventId)) return response.notFound(res, "failed to find ticket by event")
       const result = await TicketModel.find({ events: eventId })
       response.success(res, result, "success to find ticket by event")
     } catch (error) {
