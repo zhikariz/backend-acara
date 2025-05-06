@@ -72,6 +72,11 @@ const doc = {
         description: "",
         event: "event ObjectID",
       },
+      CreateBannerRequest: {
+        title: "",
+        image: "",
+        isShow: false,
+      }
     }
   },
 }

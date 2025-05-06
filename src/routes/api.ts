@@ -9,6 +9,7 @@ import categoryController from '../controllers/category.controller'
 import regionController from '../controllers/region.controller'
 import eventController from '../controllers/event.controller'
 import ticketController from '../controllers/ticket.controller'
+import bannerController from '../controllers/banner.controller'
 
 const router = express.Router()
 
@@ -112,6 +113,56 @@ router.get(
    */
   "/tickets/:eventId/events",
   ticketController.findAllByEvent,
+)
+
+router.post(
+  /*
+   * #swagger.tags = ['Banner']
+   * #swagger.security = [{ "bearerAuth": {} }]
+   * #swagger.requestBody = {
+     required: true,
+     schema: { $ref: "#/components/schemas/CreateBannerRequest" }
+   }
+   */
+  "/banners",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  bannerController.create,
+)
+router.get(
+  /*
+   * #swagger.tags = ['Banner']
+   */
+  "/banners",
+  bannerController.findAll,
+)
+router.get(
+  /*
+   * #swagger.tags = ['Banner']
+   */
+  "/banners/:id",
+  bannerController.findOne,
+)
+router.put(
+  /*
+   * #swagger.tags = ['Banner']
+   * #swagger.security = [{ "bearerAuth": {} }]
+   * #swagger.requestBody = {
+     required: true,
+     schema: { $ref: "#/components/schemas/CreateBannerRequest" }
+   }
+   */
+  "/banners/:id",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  bannerController.update,
+)
+router.delete(
+  /*
+   * #swagger.tags = ['Banner']
+   * #swagger.security = [{ "bearerAuth": {} }]
+   */
+  "/banners/:id",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  bannerController.remove,
 )
 
 router.post(
