@@ -54,6 +54,7 @@ export default {
     try {
       const { id } = req.params
       const result = await TicketModel.findById(id)
+      if (!result) return response.notFound(res, "failed to find a ticket")
       response.success(res, result, "success to find a ticket")
 
     } catch (error) {
