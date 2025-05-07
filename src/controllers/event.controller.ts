@@ -1,13 +1,13 @@
 import { Response } from "express";
 import { IPaginationQuery, IReqUser } from "../utils/interfaces";
 import response from "../utils/response";
-import EventModel, { eventDAO, TEvent } from "../models/event.model";
+import EventModel, { eventDAO, TypeEvent } from "../models/event.model";
 import { FilterQuery, isValidObjectId } from "mongoose";
 
 export default {
   create: async (req: IReqUser, res: Response) => {
     try {
-      const payload = { ...req.body, createdBy: req.user?.id } as TEvent
+      const payload = { ...req.body, createdBy: req.user?.id } as TypeEvent
       await eventDAO.validate(payload, { abortEarly: false })
       const result = await EventModel.create(payload)
       response.success(res, result, "success to create an event")
@@ -17,32 +17,34 @@ export default {
   },
   findAll: async (req: IReqUser, res: Response) => {
     try {
-      const { limit = 10, page = 1, search } = req.query as unknown as IPaginationQuery
-
-      const query: FilterQuery<TEvent> = {}
-
-      if (search) {
-        Object.assign(query, {
-          ...query,
-          $text: {
-            $search: search
-          }
-        })
+      const buildQuery = (filter: any) => {
+        let query: FilterQuery<TypeEvent> = {}
+        if (filter.search) query.$text = { $search: filter.search }
+        if (filter.category) query.category = filter.category
+        if (filter.isOnline) query.isOnline = filter.isOnline
+        if (filter.isFeatured) query.isFeatured = filter.isFeatured
+        if (filter.isPublish) query.isPublish = filter.isPublish
+        return query
       }
+
+      const { limit = 10, page = 1, search, category, isOnline, isFeatured, isPublish } = req.query
+
+      const query = buildQuery({ search, category, isOnline, isFeatured, isPublish })
+
 
       const result = await EventModel
         .find(query)
-        .limit(limit)
-        .skip((page - 1) * limit)
+        .limit(+limit)
+        .skip((+page - 1) * +limit)
         .sort({ createdAt: -1 })
         .exec()
 
       const count = await EventModel.countDocuments(query)
 
       response.pagination(res, result, {
-        current: page,
+        current: +page,
         total: count,
-        totalPages: Math.ceil(count / limit)
+        totalPages: Math.ceil(count / +limit)
       }, "success to get all events")
 
     } catch (error) {
