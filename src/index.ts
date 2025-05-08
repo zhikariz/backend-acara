@@ -1,10 +1,10 @@
+
 import express from 'express'
 import bodyParser from 'body-parser'
 import router from './routes/api'
 import db from './utils/database'
 import docs from './docs/route'
 import cors from 'cors'
-import serverless from '@vendia/serverless-express'
 
 const app = express()
 
@@ -21,19 +21,15 @@ app.get("/", (req, res) => {
 app.use('/api', router)
 docs(app)
 
-const init = async () => {
+export default async function handler(req: any, res: any) {
   try {
-    const result = await db()
-    console.log("Database Status : ", result)
-  } catch (error) {
-    console.error("Database connection error:", error)
+    await db()
+    return app(req, res) // Pass request/response directly to Express
+  } catch (err) {
+    console.error("DB connection failed:", err)
+    return res.status(500).json({ error: "Internal server error" })
   }
 }
 
-// Initialize DB connection before exporting the handler
-init()
+export { app }
 
-// Export handler for Vercel
-export default serverless({ app })
-
-export { app } // <-- Add this for local dev
