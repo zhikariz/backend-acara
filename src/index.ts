@@ -34,6 +34,6 @@ const init = async () => {
 init()
 
 // Export handler for Vercel
-export const handler = serverless({ app })
+export default serverless({ app })
 
 export { app } // <-- Add this for local dev
