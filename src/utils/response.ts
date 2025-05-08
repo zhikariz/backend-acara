@@ -18,33 +18,16 @@ export default {
       data,
     });
   },
-  error: (res: Response, error: unknown, message: string) => {
+  error(res: Response, error: unknown, message: string) {
     if (error instanceof Yup.ValidationError) {
-      const errors: Record<string, string[]> = {};
-
-      // If error.inner is empty, fallback to error.message and error.path
-      if (error.inner && error.inner.length > 0) {
-        error.inner.forEach((e) => {
-          const path = e.path ?? "form"; // fallback to "form" if path is missing
-
-          if (!errors[path]) {
-            errors[path] = [];
-          }
-
-          errors[path].push(e.message);
-        });
-      } else if (error.path) {
-        errors[error.path] = [error.message];
-      } else {
-        errors["form"] = [error.message];
-      }
-
       return res.status(400).json({
         meta: {
           status: 400,
           message,
         },
-        data: errors,
+        data: {
+          [`${error.path}`]: error.errors[0],
+        },
       });
     }
 
@@ -69,7 +52,7 @@ export default {
       });
     }
 
-    return res.status(500).json({
+    res.status(500).json({
       meta: {
         status: 500,
         message,
