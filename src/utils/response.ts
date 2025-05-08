@@ -70,9 +70,9 @@ export default {
     });
   },
   unauthorized: (res: Response, message: string = "unauthorized") => {
-    res.status(401).json({
+    res.status(403).json({
       meta: {
-        status: 401,
+        status: 403,
         message,
       },
       data: null,
