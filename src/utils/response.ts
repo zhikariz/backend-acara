@@ -1,12 +1,12 @@
-import { Response } from "express"
-import mongoose from "mongoose"
-import * as Yup from "yup"
+import { Response } from "express";
+import mongoose from "mongoose";
+import * as Yup from "yup";
 
 type Pagination = {
-  totalPages: number,
-  current: number,
-  total: number
-}
+  totalPages: number;
+  current: number;
+  total: number;
+};
 
 export default {
   success: (res: Response, data: any, message: string) => {
@@ -15,8 +15,8 @@ export default {
         status: 200,
         message,
       },
-      data
-    })
+      data,
+    });
   },
   error: (res: Response, error: unknown, message: string) => {
     if (error instanceof Yup.ValidationError) {
@@ -59,11 +59,11 @@ export default {
     }
 
     if ((error as any)?.code) {
-      const _err = error as any
+      const _err = error as any;
       return res.status(500).json({
         meta: {
           status: 500,
-          message: _err.errorResponse.errmsg,
+          message: _err?.errorResponse?.errmsg || "server error",
         },
         data: _err,
       });
@@ -75,46 +75,48 @@ export default {
         message,
       },
       data: error,
-    })
+    });
   },
   notFound: (res: Response, message: string = "not found") => {
     res.status(404).json({
       meta: {
         status: 404,
-        message
+        message,
       },
-      data: null
-    })
+      data: null,
+    });
   },
   unauthorized: (res: Response, message: string = "unauthorized") => {
     res.status(401).json({
       meta: {
         status: 401,
-        message
+        message,
       },
-      data: null
-    })
+      data: null,
+    });
   },
   forbidden: (res: Response, message: string = "forbidden") => {
     res.status(403).json({
       meta: {
         status: 403,
-        message
+        message,
       },
       data: null,
-    })
+    });
   },
-  pagination: (res: Response, data: any[], pagination: Pagination, message: string) => {
+  pagination: (
+    res: Response,
+    data: any[],
+    pagination: Pagination,
+    message: string
+  ) => {
     res.status(200).json({
       meta: {
         status: 200,
-        message
+        message,
       },
       data,
-      pagination
-    })
-  }
-
-}
-
-
+      pagination,
+    });
+  },
+};
