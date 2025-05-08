@@ -5,29 +5,48 @@ import router from './routes/api'
 import db from './utils/database'
 import docs from './docs/route'
 import cors from 'cors'
+import { NowRequest, NowResponse } from '@vercel/node'
+import response from './utils/response'
 
+// Prepare app
 const app = express()
-
 app.use(cors())
 app.use(bodyParser.json())
-
-app.get("/", (req, res) => {
-  res.status(200).json({
-    message: "Server is running",
-    data: null,
-  });
-});
-
 app.use('/api', router)
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Server is running',
+  })
+})
 docs(app)
 
-export default async function handler(req: any, res: any) {
-  try {
+// Run DB connection once and reuse
+let isDBConnected = false
+async function ensureDBConnection() {
+  if (!isDBConnected) {
     await db()
-    return app(req, res) // Pass request/response directly to Express
-  } catch (err) {
-    console.error("DB connection failed:", err)
-    return res.status(500).json({ error: "Internal server error" })
+    isDBConnected = true
+  }
+}
+
+// ✅ Export for Vercel
+export default async function handler(req: NowRequest, res: NowResponse) {
+  try {
+    await ensureDBConnection()
+
+    return new Promise<void>((resolve, reject) => {
+      app(req, res, (err: any) => {
+        if (err) {
+          console.error(err)
+          response.error(res, err, "Internal Server Error")
+          return reject(err)
+        }
+        return resolve()
+      })
+    })
+  } catch (error) {
+    console.error("Top-level handler error:", error)
+    response.error(res, error, "Internal Server Error")
   }
 }
 
