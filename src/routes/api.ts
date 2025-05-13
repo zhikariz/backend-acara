@@ -10,6 +10,7 @@ import regionController from '../controllers/region.controller'
 import eventController from '../controllers/event.controller'
 import ticketController from '../controllers/ticket.controller'
 import bannerController from '../controllers/banner.controller'
+import orderController from '../controllers/order.controller'
 
 const router = express.Router()
 
@@ -200,17 +201,17 @@ router.get(
   */
 );
 
-router.delete(
-  "/orders/:orderId",
-  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
-  orderController.remove
-  /*
-  #swagger.tags = ['Order']
-  #swagger.security = [{
-    "bearerAuth": ""
-  }]
-  */
-);
+// router.delete(
+//   "/orders/:orderId",
+//   [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+//   orderController.remove
+//   /*
+//   #swagger.tags = ['Order']
+//   #swagger.security = [{
+//     "bearerAuth": ""
+//   }]
+//   */
+// );
 
 router.post(
   /*
