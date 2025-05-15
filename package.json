@@ -1,5 +1,6 @@
 {
   "name": "backend-acara",
+  "type": "module",
   "scripts": {
     "dev": "nodemon ./dev-server.ts",
     "docs": "ts-node src/docs/swagger.ts"
