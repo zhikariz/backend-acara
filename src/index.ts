@@ -1,54 +1,45 @@
 
-import express from 'express'
-import bodyParser from 'body-parser'
-import router from './routes/api'
-import db from './utils/database'
-import docs from './docs/route'
-import cors from 'cors'
-import { NowRequest, NowResponse } from '@vercel/node'
-import response from './utils/response'
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
 
-// Prepare app
-const app = express()
-app.use(cors())
-app.use(bodyParser.json())
-app.use('/api', router)
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Server is running',
-  })
-})
-docs(app)
+import router from "./routes/api";
 
-// Run DB connection once and reuse
-let isDBConnected = false
-async function ensureDBConnection() {
-  if (!isDBConnected) {
-    await db()
-    isDBConnected = true
-  }
-}
+import db from "./utils/database";
+import docs from "./docs/route";
+import errorMiddleware from "./middlewares/error.middleware";
 
-// ✅ Export for Vercel
-export default async function handler(req: NowRequest, res: NowResponse) {
+async function init() {
   try {
-    await ensureDBConnection()
+    const PORT = 3000;
+    const result = await db();
 
-    return new Promise<void>((resolve, reject) => {
-      app(req, res, (err: any) => {
-        if (err) {
-          console.error(err)
-          response.error(res, err, "Internal Server Error")
-          return reject(err)
-        }
-        return resolve()
-      })
-    })
+    console.log("database status: ", result);
+
+    const app = express();
+
+    app.use(cors());
+    app.use(bodyParser.json());
+    app.use(errorMiddleware.serverRoute())
+    app.use(errorMiddleware.serverError())
+
+    app.get("/", (req, res) => {
+      res.status(200).json({
+        message: "Server is running",
+        data: null,
+      });
+    });
+
+    app.use("/api", router);
+    docs(app);
+
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
   } catch (error) {
-    console.error("Top-level handler error:", error)
-    response.error(res, error, "Internal Server Error")
+    console.log(error);
   }
 }
 
-export { app }
+init();
 
