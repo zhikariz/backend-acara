@@ -64,7 +64,6 @@ const OrderSchema = new Schema<Order>({
         required: true,
       }
     },
-    required: true,
   },
   createdBy: {
     type: Schema.Types.ObjectId,
