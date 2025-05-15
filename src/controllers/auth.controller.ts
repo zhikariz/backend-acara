@@ -41,7 +41,7 @@ export default {
       if (!user || user.password !== encrypt(oldPassword)) response.notFound(res, "user not found")
 
       const result = await UserModel.findByIdAndUpdate(userId, {
-        password
+        password: encrypt(password),
       }, { new: true })
 
       if (!result) return response.notFound(res, "failed update password")
