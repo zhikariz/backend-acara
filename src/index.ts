@@ -20,8 +20,6 @@ async function init() {
 
     app.use(cors());
     app.use(bodyParser.json());
-    app.use(errorMiddleware.serverRoute())
-    app.use(errorMiddleware.serverError())
 
     app.get("/", (req, res) => {
       res.status(200).json({
@@ -32,6 +30,9 @@ async function init() {
 
     app.use("/api", router);
     docs(app);
+    app.use(errorMiddleware.serverRoute())
+    app.use(errorMiddleware.serverError())
+
 
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
