@@ -3,6 +3,7 @@ import { IPaginationQuery, IReqUser } from "../utils/interfaces";
 import response from "../utils/response";
 import EventModel, { eventDTO, TypeEvent } from "../models/event.model";
 import { FilterQuery, isValidObjectId } from "mongoose";
+import uploader from "../utils/uploader";
 
 export default {
   create: async (req: IReqUser, res: Response) => {
@@ -68,6 +69,7 @@ export default {
       const { id } = req.params
       if (!isValidObjectId(id)) return response.notFound(res, "failed to find an event")
       const result = await EventModel.findByIdAndUpdate(id, req.body, { new: true })
+      if (!result) return response.notFound(res, "failed to find an event")
       response.success(res, result, "success to update an event")
     } catch (error) {
       response.error(res, error, "failed to update an event")
@@ -78,6 +80,8 @@ export default {
       const { id } = req.params
       if (!isValidObjectId(id)) return response.notFound(res, "failed to find an event")
       const result = await EventModel.findByIdAndDelete(id, { new: true })
+      if (!result) return response.notFound(res, "failed to find an event")
+      await uploader.remove(result?.banner)
       response.success(res, result, "success to delete an event")
     } catch (error) {
       response.error(res, error, "failed to delete an event")
@@ -87,6 +91,7 @@ export default {
     try {
       const { slug } = req.params
       const result = await EventModel.findOne({ slug })
+      if (!result) return response.notFound(res, "failed to get an event by slug")
       response.success(res, result, "success to get an event by slug")
     } catch (error) {
       response.error(res, error, "failed to get an event by slug")
