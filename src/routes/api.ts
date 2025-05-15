@@ -59,6 +59,38 @@ router.post(
   authController.activation
 )
 
+router.put(
+  /*
+      #swagger.tags = ['Auth']
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#/components/schemas/UpdateProfileRequest" }
+      }
+  */
+  '/auth/update-profile',
+  [authMiddleware, aclMiddleware([ROLES.MEMBER])],
+  authController.updateProfile
+)
+
+router.put(
+  /*
+      #swagger.tags = ['Auth']
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#/components/schemas/UpdatePasswordRequest" }
+      }
+  */
+  '/auth/update-password',
+  [authMiddleware, aclMiddleware([ROLES.MEMBER])],
+  authController.updatePassword
+)
+
 router.post(
   /*
    * #swagger.tags = ['Ticket']

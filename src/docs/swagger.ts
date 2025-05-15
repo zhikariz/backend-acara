@@ -76,6 +76,15 @@ const doc = {
         title: "",
         image: "",
         isShow: false,
+      },
+      UpdateProfileRequest: {
+        fullName: "",
+        profilePicture: "",
+      },
+      UpdatePasswordRequest: {
+        oldPassword: "",
+        password: "",
+        confirmPassword: "",
       }
     }
   },

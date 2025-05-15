@@ -1,57 +1,61 @@
 import * as Yup from "yup";
-import UserModel from "../models/user.model";
+import UserModel, { userDTO, UserLoginDTO, userUpdatePasswordDTO } from "../models/user.model";
 import { encrypt } from "../utils/encryption";
 import { generateToken } from "../utils/jwt";
 import type { Request, Response } from "express";
 import { IReqUser, IUserToken } from "../utils/interfaces";
 import response from "../utils/response";
 
-type TRegister = {
-  fullName: string;
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
-
-type TLogin = {
-  identifier: string;
-  password: string;
-};
-
-const registerValidateSchema = Yup.object({
-  fullName: Yup.string().required(),
-  username: Yup.string().required(),
-  email: Yup.string().required(),
-  password: Yup.string()
-    .required()
-    .min(6, "Password must be at least 6 characters")
-    .test(
-      "at-least-one-uppercase-letter",
-      "Contains at least one uppercase letter",
-      (value) => {
-        if (!value) return false;
-        const regex = /^(?=.*[A-Z])/;
-        return regex.test(value);
-      }
-    )
-    .test("at-least-one-number", "Contains at least one number", (value) => {
-      if (!value) return false;
-      const regex = /^(?=.*\d)/;
-      return regex.test(value);
-    }),
-  confirmPassword: Yup.string()
-    .required()
-    .oneOf([Yup.ref("password"), ""], "Password doesn't match"),
-});
-
 export default {
+  updateProfile: async (req: IReqUser, res: Response) => {
+    try {
+      const userId = req.user?.id
+      const { fullName, profilePicture } = req.body
+
+      const result = await UserModel.findByIdAndUpdate(userId, {
+        fullName,
+        profilePicture
+
+      }, { new: true })
+
+      if (!result) return response.notFound(res, "failed update profile")
+      response.success(res, result, "success update profile")
+    } catch (error) {
+      response.error(res, error, "failed update profile")
+    }
+  },
+  updatePassword: async (req: IReqUser, res: Response) => {
+    try {
+      const userId = req.user?.id
+      const { oldPassword, password, confirmPassword } = req.body
+      await userUpdatePasswordDTO.validate(
+        {
+          oldPassword,
+          password,
+          confirmPassword
+        }
+      )
+
+      const user = await UserModel.findById(userId)
+
+      if (!user || user.password !== encrypt(oldPassword)) response.notFound(res, "user not found")
+
+      const result = await UserModel.findByIdAndUpdate(userId, {
+        password
+      }, { new: true })
+
+      if (!result) return response.notFound(res, "failed update password")
+
+      response.success(res, result, "success update password")
+    } catch (error) {
+      response.error(res, error, "failed update password")
+    }
+  },
   register: async (req: Request, res: Response) => {
-    const { fullName, username, email, password, confirmPassword } =
-      req.body as unknown as TRegister;
+    const { fullName, username, email, password, confirmPassword } = req.body;
 
     try {
-      await registerValidateSchema.validate({
+      await userDTO.validate({
         fullName,
         username,
         email,
@@ -78,8 +82,11 @@ export default {
     );
   },
   login: async (req: Request, res: Response) => {
-    const { identifier, password } = req.body as unknown as TLogin;
+    const { identifier, password } = req.body;
     try {
+      await UserLoginDTO.validate({
+        identifier, password
+      })
       const userByIdentifier = await UserModel.findOne({
         $or: [{ username: identifier }, { email: identifier }],
         isActive: true,
