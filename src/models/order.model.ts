@@ -8,14 +8,14 @@ import { getId } from "../utils/id"
 
 export const ORDER_MODEL_NAME = "Order"
 
-export const orderDAO = Yup.object({
+export const orderDTO = Yup.object({
   createdBy: Yup.string().required("order created by is required"),
   events: Yup.string().required("order event is required"),
   ticket: Yup.string().required("order ticket is required"),
   quantity: Yup.number().required("order quantity is required"),
 })
 
-export type TypeOrder = Yup.InferType<typeof orderDAO>
+export type TypeOrder = Yup.InferType<typeof orderDTO>
 
 export enum OrderStatus {
   PENDING = "pending",

@@ -3,13 +3,13 @@ import * as Yup from "yup"
 
 const Schema = mongoose.Schema
 
-export const categoryDAO = Yup.object({
+export const categoryDTO = Yup.object({
   name: Yup.string().required("category name is required"),
   description: Yup.string().required("category description is required"),
   icon: Yup.string().required("category icon is required"),
 })
 
-export type Category = Yup.InferType<typeof categoryDAO>
+export type Category = Yup.InferType<typeof categoryDTO>
 
 const CategorySchema = new Schema<Category>({
   name: {

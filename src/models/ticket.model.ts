@@ -2,10 +2,9 @@ import mongoose, { Schema } from "mongoose"
 import * as Yup from "yup"
 import { EVENT_MODEL_NAME } from "./event.model"
 
-
 export const TICKET_MODEL_NAME = "Ticket"
 
-export const ticketDAO = Yup.object({
+export const ticketDTO = Yup.object({
   price: Yup.number().required("ticket price is required"),
   name: Yup.string().required("ticket name is required"),
   events: Yup.string().required("ticket events is required"),
@@ -13,7 +12,7 @@ export const ticketDAO = Yup.object({
   quantity: Yup.number().required("ticket quantity is required"),
 })
 
-export type TypeTicket = Yup.InferType<typeof ticketDAO>
+export type TypeTicket = Yup.InferType<typeof ticketDTO>
 
 interface Ticket extends Omit<TypeTicket, "events"> {
   events: Schema.Types.ObjectId;

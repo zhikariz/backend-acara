@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { IReqUser } from "../utils/interfaces";
 import response from "../utils/response";
-import OrderModel, { orderDAO, OrderStatus, TypeOrder, TypeVoucher } from "../models/order.model";
+import OrderModel, { orderDTO, OrderStatus, TypeOrder, TypeVoucher } from "../models/order.model";
 import TicketModel from "../models/ticket.model";
 import { FilterQuery, isValidObjectId } from "mongoose";
 import { getId } from "../utils/id";
@@ -15,7 +15,7 @@ export default {
         createdBy: userId,
       } as TypeOrder;
 
-      await orderDAO.validate(payload);
+      await orderDTO.validate(payload);
 
       const ticket = await TicketModel.findById(payload.ticket);
       if (!ticket) return response.notFound(res, "ticket not found");
