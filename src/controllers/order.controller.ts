@@ -71,7 +71,7 @@ export default {
   findOne: async (req: IReqUser, res: Response) => {
     try {
       const { orderId } = req.params
-      const result = await OrderModel.findById({
+      const result = await OrderModel.findOne({
         orderId,
       })
 
